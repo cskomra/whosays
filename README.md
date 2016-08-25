@@ -32,7 +32,7 @@ In Version 1 of 'Who Says?' this is done with the `add_data` endpoint. Future ve
     - saying:           It does not do to dwell on dreams and forget to live.
 
 4. Add the following with the `add_data` endpoint:
-    - hints:            `2014^^Business^^Male^^Zero to One^^PT`
+    - hints:            `2014^^Tech^^Male^^Zero to One^^PT`
     - sayer:            Peter Thiel
     - sayer_category    ENTREPRENEUR
     - saying:           A great company is a conspiracy to change the world.
@@ -128,7 +128,7 @@ Many different 'Who Says?' games can be played by many different Users at any gi
     - Description: Returns all Scores recorded by the provided player (unordered).
     Will raise a NotFoundException if the User does not exist.
 
- - **get_active_game_count**
+ - **get_average_game_points**
     - Path: 'games/averagepoints'
     - Method: GET
     - Parameters: None
@@ -189,15 +189,15 @@ Many different 'Who Says?' games can be played by many different Users at any gi
     - Multiple RankingForm container.
 - **GameForm**
     - Representation of a Game's state (urlsafe_key, saying, hints, status, message, user_name, points_possible).
- - **NewGameForm**
+- **NewGameForm**
     - Used to create a new game (user_name, sayer_category, num_hints)
- - **MakeMoveForm**
+- **MakeMoveForm**
     - Inbound make move form used to take a guess in an existing game (guess).
- - **ScoreReport**
+- **ScoreReport**
     - Representation of a completed game's Score (user_name, status, points).
- - **ScoreForms**
+- **ScoreForms**
     - Multiple ScoreReport container.
- - **StringMessage**
+- **StringMessage**
     - General purpose String container.
 - **NewGameDataForm**
     - Used to create new game data (sayer_category, sayer, saying, hints)
