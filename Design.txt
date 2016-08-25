@@ -1,0 +1,17 @@
+What additional properties did you add to your models and why?
+	I added meta information that is required to found a game via the GameData model. I wanted to create a game that would cause the user to make a choice that would affect her ability to guess correctly.  Players essentially become risk managers--taking risks based on what they know about different subject matter. The more they play, the better they could potentially become at playing the game. 
+	Also, the greater the risk (purchasing few, if any, hints) the greater the reward--more points awarded if they guess correctly.
+	I substituted get_game_analysis for get_game_history.  The nature of “Who Says?” is such that there is not a back-and-forth type of history; but rather, a calculated one-guess risk for points accordingly. The analysis did not require a new model, but instead is based on the game model. Because the game model holds an instance of the game, it has all the information about the occurrence and is appropriate for retrieving information about it. Analysis data reveals how well players are doing in light of the choices they are making.
+
+What were some of the trade-offs or struggles you faced when implementing the new game logic?
+	I wanted to provide a fun game experience but not spend too much time on it up front. Sometimes, what you think is fun is not really fun to someone else. So it’s better to create a minimum viable game and improve it after feedback.
+	It needed to be complete; but not have every bell and whistle (for similar, previously stated reasons). 
+	Some trade-off decisions I made to reach these goals:
+		- Deciding to go with a delimited text string to group hint data rather than build out one or more data models.
+		- Not specifying indexing on model properties (just yet).
+		- Not separating out a score model until I know it is needed for proper game function.
+	One great struggle I had with this project was just knowing where to start.  I learn well by walking through a build-it-from-scratch example. This provides me with the know-how to build something from scratch; and then leaves me with sample code as a reference point for my own work. I’m either going to take something that already exists and tweak it; or I’m going to build something completely new but base it on a similar pattern. This project seemed extra hard because I had to figure out the entry point. I finally started with app.yaml.
+	One of the things that helps get me going quickly in any project is knowing how to find out what’s wrong with the code.  What are the tools available to debug code in this environment? This was not provided in the instruction, so I had to stumble around in the dark a bit. After I hit my head a few times, I finally figured out the light switch was located in the Google Cloud Log Viewer.  :-)
+
+
+

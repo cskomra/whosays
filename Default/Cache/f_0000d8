@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+
+
+<html>
+<head>
+  <title>Datastore Viewer</title>
+  <link rel="stylesheet" href="/assets/common.css" type="text/css" media="screen">
+  <script src='/assets/jquery-1.8.2.min.js'></script>
+  
+  <script>/**
+ * @fileoverview Supporting Javascript for the datastore viewer.
+ * @author bquinlan@google.com (Brian Quinlan)
+ */
+function checkAllEntities() {
+  var check = $('#allkeys').prop('checked');
+  $('input[name="entity_key"]').attr('checked', check);
+  updateDeleteButtonAndCheckbox();
+}
+
+function updateDeleteButtonAndCheckbox() {
+  var checkboxes = $('input[name="entity_key"]');
+  var checked_checkboxes = checkboxes.filter(':checked');
+
+  if (checked_checkboxes.length) {
+    $('#delete_button').removeAttr('disabled');
+    $('#delete_button').removeClass('disabled');
+  } else {
+    $('#delete_button').attr('disabled', 'disabled');
+    $('#delete_button').addClass('disabled');
+  }
+
+  $('#allkeys').attr('checked',
+                     checkboxes.length == checked_checkboxes.length);
+}
+
+$(document).ready(function() {
+  $('#allkeys').click(checkAllEntities);
+
+  $('#create_button').click(function() {
+    params = {'kind' : $('#kind_input').attr('value'),
+              'next': 'http://localhost:8000/datastore?kind=Game'};
+
+    if ($('#namespace_input').length) {
+      params['namespace'] = $('#namespace_input').attr('value');
+    }
+
+    window.location = '/datastore/edit?' + $.param(params);
+    return false;
+  });
+
+  $('#delete_button').click(function() {
+    return confirm(
+        'Are you sure you wish to delete these entities? If your app uses ' +
+        'memcache to cache entities (e.g. uses ndb) then you may see stale ' +
+        'results unless you flush memcache.');
+  });
+
+  $('#memcache_flush_button').click(function() {
+    return confirm('Are you sure you want to flush all keys from the cache?');
+  });
+
+  $('input[name="entity_key"]').change(function() {
+    updateDeleteButtonAndCheckbox();
+  });
+
+  if ($('#delete_button').length) {
+    updateDeleteButtonAndCheckbox();
+  }
+
+  $('kind_input').focus();
+});</script>
+  <style type="text/css">
+#datastore-viewer #entity-manager table {
+  margin: 10px 0px;
+}
+#datastore-viewer #entity-manager table td {
+  vertical-align: bottom;
+}
+#datastore-viewer #entity-manager th {
+  font-weight: bold;
+  padding: 5px 0px;
+}
+#datastore-viewer select#kind_input {
+  text-align: left;
+}
+#datastore-viewer .ae-result-count {
+  float: left;
+  color: #999;
+}
+#datastore-viewer .ae-paginator {
+  float: right;
+}</style>
+
+</head>
+
+<body>
+  <header id="ae-googlebar" role="banner">
+    <aside>
+        Development SDK 1.9.40
+    </aside>
+    <h1>
+        <a href="/">
+          <img alt="Google" src="/assets/google_logo_41.png">
+        App Engine
+      </a>
+    </h1>
+  </header>
+  <div id="leftnavc">
+    <div class="sidebarHolder">
+      <h4><a href="/">dev~whosays-140117</a></h4>
+      <div class="ae-content-sidebar">
+        <ul>
+          <li class="ae-sidebarlistitem">
+    <a href="/instances">Instances</a>
+  </li>
+          <li class="ae-sidebarlistitem selected">
+    <a href="/datastore">Datastore Viewer</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/datastore-indexes">Datastore Indexes</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/datastore-stats">Datastore Stats</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/console">Interactive Console</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/memcache">Memcache Viewer</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/blobstore">Blobstore Viewer</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/taskqueue">Task Queues</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/cron">Cron Jobs</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/xmpp">XMPP</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/mail">Inbound Mail</a>
+  </li>
+          <li class="ae-sidebarlistitem">
+    <a href="/search">Full Text Search</a>
+  </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="rcnt">
+    <div id="content">
+      
+<div id="datastore-viewer">
+  <h3>Datastore Viewer</h3>
+
+  
+
+  <form action="/datastore" method="get">
+  
+    <div id="entity-manager" class="ae-settings-block">
+      <table>
+        <thead>
+          <tr>
+            
+            <th>
+              Entity Kind
+            </th>
+            <th>
+              &nbsp;
+            </th>
+          </tr>
+        </thead>
+        <tr>
+          
+          <td>
+            <select name="kind" class="ae-button" id="kind_input">
+              
+              <option value="Game" selected="selected">Game</option>
+              
+              <option value="GameData">GameData</option>
+              
+              <option value="User">User</option>
+              
+            </select>
+          </td>
+          <td>
+            <input type="submit" class="ae-button" value="List Entities"/>
+            <input type="button" id="create_button" class="ae-button" value="Create New Entity"/>
+            
+              <a href="/datastore?kind=Game&amp;namespace=">Select a different namespace</a>
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+  </form>
+
+  
+    <form action="/datastore" method="post">
+      <input type="hidden" name="xsrf_token" value="MdDtOLndDF"/>
+      <input type="hidden" name="kind" value="Game"/>
+      <table class="ae-table ae-settings-block">
+        <thead>
+        <tr>
+          <th><input id="allkeys" type="checkbox" /></th>
+          <th>Key</th>
+          <th>Write Ops</th>
+          <th>ID</th>
+          <th>Key Name</th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=game_over">game_over</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=hints">hints</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=num_hints">num_hints</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=points">points</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=sayer_category">sayer_category</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=saying">saying</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=status">status</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=user">user</a></th>
+          
+            <th ><a href="/datastore?kind=Game&amp;order=who_says">who_says</a></th>
+          
+          
+        </tr>
+        
+          <tr>
+            <td>
+              <input id="key1" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAgM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAgM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              23
+            </td>
+            <td>
+              
+                4714705859903488
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>3</td>
+            
+              <td>59</td>
+            
+              <td></td>
+            
+              <td>You ARE the brute squad!</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Billy Crystal</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key2" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDA7wgM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDA7wgM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              27
+            </td>
+            <td>
+              
+                4993981813358592
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>5</td>
+            
+              <td>4</td>
+            
+              <td></td>
+            
+              <td>You ARE the brute squad!</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Billy Crystal</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key3" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAkM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAkM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              23
+            </td>
+            <td>
+              
+                5277655813324800
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 20...</td>
+            
+              <td>3</td>
+            
+              <td>59</td>
+            
+              <td></td>
+            
+              <td>A great company is a consip...</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Peter Thiel</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key4" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDglwoM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDglwoM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              25
+            </td>
+            <td>
+              
+                5733953138851840
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>3</td>
+            
+              <td>59</td>
+            
+              <td>ACTOR</td>
+            
+              <td>You ARE the brute squad!</td>
+            
+              <td>NEW</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Billy Crystal</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key5" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDArwoM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDArwoM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              27
+            </td>
+            <td>
+              
+                5838406743490560
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>5</td>
+            
+              <td>4</td>
+            
+              <td></td>
+            
+              <td>You ARE the brute squad!</td>
+            
+              <td>NEW</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Billy Crystal</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key6" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAoM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAoM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              19
+            </td>
+            <td>
+              
+                5840605766746112
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>1</td>
+            
+              <td>80</td>
+            
+              <td></td>
+            
+              <td>Ground control to Major Tom</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>David Bowie</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key7" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDQuwoM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDQuwoM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              21
+            </td>
+            <td>
+              
+                5891733057437696
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>1</td>
+            
+              <td>80</td>
+            
+              <td>SINGER</td>
+            
+              <td>Ground control to Major Tom</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>David Bowie</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key8" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDA7woM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDA7woM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              19
+            </td>
+            <td>
+              
+                6119881720201216
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>1</td>
+            
+              <td>80</td>
+            
+              <td></td>
+            
+              <td>You ARE the brute squad!</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Billy Crystal</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key9" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAsM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgICAsAsM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              19
+            </td>
+            <td>
+              
+                6403555720167424
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>1</td>
+            
+              <td>80</td>
+            
+              <td></td>
+            
+              <td>It does not do to dwell on ...</td>
+            
+              <td>LOST</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>J.K. Rowling</td>
+            
+            
+          </tr>
+        
+          <tr>
+            <td>
+              <input id="key10" type="checkbox" name="entity_key" value="ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDA7wsM"/>
+            </td>
+            <td>
+              <a href="/datastore/edit/ahJkZXZ-d2hvc2F5cy0xNDAxMTdyEQsSBEdhbWUYgICAgIDA7wsM?next=http%3A//localhost%3A8000/datastore%3Fkind%3DGame">ahJkZXZ-...</a>
+            </td>
+            <td>
+              21
+            </td>
+            <td>
+              
+                6682831673622528
+              
+            </td>
+            <td>
+              
+            </td>
+            
+              <td>False</td>
+            
+              <td>[u&#39;The year it was said: 19...</td>
+            
+              <td>2</td>
+            
+              <td>72</td>
+            
+              <td></td>
+            
+              <td>You ARE the brute squad!</td>
+            
+              <td>WON</td>
+            
+              <td>ahJkZXZ-...</td>
+            
+              <td>Billy Crystal</td>
+            
+            
+          </tr>
+        
+      </table>
+      <div>
+          <div class="ae-settings-block">
+            <div>
+              <input id="delete_button" class="ae-button" name="action:delete_entities" type="submit" value="Delete" />
+              <input id="memcache_flush_button" class="ae-button" type="submit" name="action:flush_memcache" value="Flush Memcache" />
+            </div>
+          </div>
+          <div class="ae-settings-block">
+            <div>
+              
+            </div>
+            <div class="ae-result-count">
+              
+                <div>
+                  Results 1 - 10 of
+                  10
+                </div>
+              
+            </div>
+          </div>
+        </div>
+    </form>
+  
+</div>
+
+    </div>
+  </div>
+</body>
+</html>
