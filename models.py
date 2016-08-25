@@ -1,4 +1,6 @@
-"""models.py - This file contains the class definitions for the Datastore entities used by the Game. Because these classes are also regular Python classes they can include methods (such as 'to_form' and 'new_game')."""
+"""models.py - This file contains the class definitions for the Datastore
+entities used by the Game. Because these classes are also regular Python
+classes they can include methods (such as 'to_form' and 'new_game')."""
 
 from protorpc import messages
 from google.appengine.ext import ndb
@@ -43,12 +45,12 @@ class GameData(ndb.Model):
 
     @classmethod
     def new_game_data(cls, sayer_category, sayer, saying, hints):
-        gData = GameData(sayer_category=sayer_category,
-                          sayer=sayer,
-                          saying=saying,
-                          hints=hints)
-        gData.put()
-        return gData
+        game_data = GameData(sayer_category=sayer_category,
+                             sayer=sayer,
+                             saying=saying,
+                             hints=hints)
+        game_data.put()
+        return game_data
 
 
 class NewGameDataForm(messages.Message):
@@ -69,8 +71,10 @@ class SayerCategory(messages.Enum):
 class NewGameForm(messages.Message):
     """Used to create a new game"""
     user_name = messages.StringField(1, required=True)
-    sayer_category = messages.EnumField(SayerCategory, 2, required=True, default='ACTOR')
-    num_hints = messages.IntegerField(3, required=True)
+    sayer_category = messages.EnumField(SayerCategory, 2,
+                                        required=True,
+                                        default='ACTOR')
+    num_hints = messages.IntegerField(3, required=True, default=0)
 
 
 class Game(ndb.Model):
@@ -89,7 +93,6 @@ class Game(ndb.Model):
         """Creates and returns a new game"""
         if num_hints < 0 or num_hints > 5:
             raise ValueError('Number of hints must be between 0 and 5')
-        # hint point values based on Fibonacci sequence
         num_points = 85
         if num_hints == 1:
             num_points = 80
@@ -104,16 +107,17 @@ class Game(ndb.Model):
         else:
             num_points = 85
 
-        gData = GameData.query(GameData.sayer_category == sayer_category.name).get()
+        game_data = GameData.query(
+            GameData.sayer_category == sayer_category.name).get()
 
-        if not gData:
+        if not game_data:
             raise ValueError('sayer_category not found.')
         else:
-            sayer = gData.sayer
-            saying = gData.saying
+            sayer = game_data.sayer
+            saying = game_data.saying
 
             # parse hints into list and assign to game.hints
-            hintsStr = gData.hints
+            hintsStr = game_data.hints
             hints = hintsStr.split('^^')
             hintSentences = [
                 "The year it was said: %s.",
@@ -123,10 +127,10 @@ class Game(ndb.Model):
                 "The sayer's initials: %s."
             ]
             userHints = []
-            for x in range(0, num_hints):
+            for x in range(num_hints):
                 userHints.append(hintSentences[x] % hints[x])
         game = Game(user=user,
-                    sayer_category = sayer_category.name,
+                    sayer_category=sayer_category.name,
                     who_says=sayer,
                     saying=saying,
                     points=num_points,

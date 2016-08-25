@@ -62,6 +62,16 @@ Hints are priced as follows:
 
 Each player gets one guess per game, which when sent to the 'make_move' endpoint will reply with either 'You lose.' or 'You win!' If you win, your game points are added to your user entity's accumulating score.
 
+Game points are calculated as follows:
+- Every game offers 85 points with which a player may purchase one or more hints.
+- If hints are purchased, the cost of the hints is deducted from the offered points (85).
+- If the player wins, points are added to the player's earned_points value on his/her user profile.
+- If the player loses, points are forfitted, but are recorded in the game entity for future game community analysis.
+
+High scores are measured based on a game instance. The highest score possible is one in which no hints were purchased for that game: 85 points.
+
+User rankings are based on the user's accumulated earned_points in his/her profile.
+
 Use `get_high_scores` and `get_user_rankings` endpoints to check player standings in the game community.
 
 Many different 'Who Says?' games can be played by many different Users at any given time. Each game can be retrieved or played by using the path parameter `urlsafe_game_key`.
