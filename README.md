@@ -1,49 +1,5 @@
 # "Who Says?" Game API
 
-## Set-Up Instructions:
-### Set Up Environment
-1. Update the value of application in `app.yaml` to the app ID you have registered in the App Engine admin console and would like to use to host your instance of this sample.
-2. Using App Engine Launcher, add an existing application; and point it to the application's directory.
-3. Select the application in App Engine Launcher and click `Run`.  (Note the port and admin port numbers)
-4. In your browser, use the port number you just noted to go to:
- `localhost:<your_port_number>/_ah/api/explorer`
-5. Click on `whosaysendpoints API` to reveal the list of available endpoints
-
-### Set Up Data (Required)
-Set up Game Data prior to playing.
-In Version 1 of 'Who Says?' this is done with the `add_data` endpoint. Future versions will have a more traditional data model. Until then, create 4 GameData sample entities to get you started. (Note: hints are marked as code for clarity. Input exactly as is, or copy/paste.)
-
-1. Add the following with the `add_data` endpoint:
-    - hints:            `1987^^Fantasy^^Male^^Princess Bride^^BC`
-    - sayer:            Billy Crystal
-    - sayer_category:   ACTOR
-    - saying:           You ARE the brute squad!
-
-2. Add the following with the `add_data` endpoint:
-    - hints:            `1969^^Pop Rock^^Male^^Space Oddity^^DB`
-    - sayer:            David Bowie
-    - sayer_category:   SINGER
-    - saying:           Ground control to Major Tom
-
-3. Add the following with the `add_data` endpoint:
-    - hints:            `1997^^Fantasy^^Female^^Harry Potter and the Philosopher's Stone^^JKR`
-    - sayer:            J.K. Rowling
-    - sayer_category:   AUTHOR
-    - saying:           It does not do to dwell on dreams and forget to live.
-
-4. Add the following with the `add_data` endpoint:
-    - hints:            `2014^^Tech^^Male^^Zero to One^^PT`
-    - sayer:            Peter Thiel
-    - sayer_category    ENTREPRENEUR
-    - saying:           A great company is a conspiracy to change the world.
-
-
-### To begin playing
-
-1. Use create_user endpoint to create one or more users/players.
-2. Use new_game to start a new game.
-3. Use make_move to take a guess.
-
 ## "Who Says?" Game Description:
 "Who says?" is a simple guessing game where the object of the game is to guess who said the 'saying'.
 Each game begins with a 'saying' based on the player's choice of one of the following categories of 'Sayers': ACTOR, SINGER, AUTHOR, or ENTREPRENEUR.
@@ -220,3 +176,46 @@ Many different 'Who Says?' games can be played by many different Users at any gi
 - **GameForms**
     - Outbound. Returns multiple GameForms.
 
+## Set-Up Instructions:
+### Set Up Environment
+1. Update the value of application in `app.yaml` to the app ID you have registered in the App Engine admin console and would like to use to host your instance of this sample.
+2. Using App Engine Launcher, add an existing application; and point it to the application's directory.
+3. Select the application in App Engine Launcher and click `Run`.  (Note the port and admin port numbers)
+4. In your browser, use the port number you just noted to go to:
+ `localhost:<your_port_number>/_ah/api/explorer`
+5. Click on `whosaysendpoints API` to reveal the list of available endpoints
+
+### Set Up Data (Required)
+Set up Game Data prior to playing.
+In Version 1 of 'Who Says?' this is done with the `add_data` endpoint. Future versions will have a more traditional data model. Until then, create 4 GameData sample entities to get you started. (Note: hints are marked as code for clarity. Input exactly as is, or copy/paste.)
+
+1. Add the following with the `add_data` endpoint:
+    - hints:            `1987^^Fantasy^^Male^^Princess Bride^^BC`
+    - sayer:            Billy Crystal
+    - sayer_category:   ACTOR
+    - saying:           You ARE the brute squad!
+
+2. Add the following with the `add_data` endpoint:
+    - hints:            `1969^^Pop Rock^^Male^^Space Oddity^^DB`
+    - sayer:            David Bowie
+    - sayer_category:   SINGER
+    - saying:           Ground control to Major Tom
+
+3. Add the following with the `add_data` endpoint:
+    - hints:            `1997^^Fantasy^^Female^^Harry Potter and the Philosopher's Stone^^JKR`
+    - sayer:            J.K. Rowling
+    - sayer_category:   AUTHOR
+    - saying:           It does not do to dwell on dreams and forget to live.
+
+4. Add the following with the `add_data` endpoint:
+    - hints:            `2014^^Tech^^Male^^Zero to One^^PT`
+    - sayer:            Peter Thiel
+    - sayer_category    ENTREPRENEUR
+    - saying:           A great company is a conspiracy to change the world.
+
+
+### To begin playing
+
+1. Use create_user endpoint to create one or more users/players.
+2. Use new_game to start a new game.
+3. Use make_move to take a guess.
